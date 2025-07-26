@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Working Instructions
+
+1. **Task Management**: Always read and update the `todo.md` file to track progress. Mark tasks as completed when done and update the current working status for in-progress items.
+
+2. **Parallel Execution**: Use as many agents or tasks as possible that can run simultaneously. When multiple independent operations are needed (e.g., running multiple bash commands, reading multiple files, or performing searches), execute them in parallel using multiple tool calls in a single response for optimal performance.
+
+3. **TodoWrite Tool**: Frequently use the TodoWrite tool to track your progress and give the user visibility into what you're working on. Mark tasks as:
+   - `pending` - Not yet started
+   - `in_progress` - Currently working on (only one task at a time)
+   - `completed` - Finished successfully
+
 ## PowerPulse Overview
 
 PowerPulse is an AI-powered personalized fitness and motivation platform that delivers daily 5-minute audio coaching sessions tailored to individual user pain points and goals. The platform uses AI to generate personalized scripts that are converted to audio using Google Text-to-Speech.
