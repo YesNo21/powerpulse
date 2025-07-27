@@ -52,8 +52,6 @@ export function DeliveryStep({ onValidationChange }: DeliveryStepProps) {
         return 'Enter your WhatsApp number (+1234567890)'
       case 'telegram':
         return 'Enter your Telegram username (@username)'
-      case 'sms':
-        return 'Enter your mobile number (+1234567890)'
       default:
         return 'Enter contact information'
     }
@@ -66,8 +64,6 @@ export function DeliveryStep({ onValidationChange }: DeliveryStepProps) {
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
       case 'whatsapp':
-      case 'sms':
-        return /^\+?[\d\s-()]+$/.test(value) && value.replace(/\D/g, '').length >= 10
       case 'telegram':
         return value.startsWith('@') && value.length > 1
       default:
@@ -92,25 +88,34 @@ export function DeliveryStep({ onValidationChange }: DeliveryStepProps) {
       {/* Delivery Method Selection */}
       <div>
         <h3 className="text-lg font-medium mb-4 text-center">Delivery Method</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-          {Object.entries(QUIZ_OPTIONS.deliveryMethods).map(([key, method]) => (
-            <Card
-              key={key}
-              className={cn(
-                "p-6 cursor-pointer transition-all duration-200 hover:shadow-lg",
-                selectedMethod === key 
-                  ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" 
-                  : "hover:shadow-md"
-              )}
-              onClick={() => setSelectedMethod(key)}
-            >
-              <div className="text-center">
-                <div className="text-3xl mb-3">{method.icon}</div>
-                <h4 className="font-semibold mb-2">{method.title}</h4>
-                <p className="text-xs text-muted-foreground">{method.description}</p>
-              </div>
-            </Card>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          {Object.entries(QUIZ_OPTIONS.deliveryMethods).map(([key, method]) => {
+            const isAvailable = method.available !== false
+            return (
+              <Card
+                key={key}
+                className={cn(
+                  "p-6 transition-all duration-200 relative",
+                  isAvailable && "cursor-pointer hover:shadow-lg",
+                  selectedMethod === key && isAvailable
+                    ? "ring-2 ring-blue-500 bg-blue-50 dark:bg-blue-900/20" 
+                    : isAvailable ? "hover:shadow-md" : "opacity-50 cursor-not-allowed"
+                )}
+                onClick={() => isAvailable && setSelectedMethod(key)}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-3">{method.icon}</div>
+                  <h4 className="font-semibold mb-2">{method.title}</h4>
+                  <p className="text-xs text-muted-foreground">{method.description}</p>
+                  {!isAvailable && (
+                    <span className="absolute top-2 right-2 text-xs bg-muted text-muted-foreground px-2 py-1 rounded">
+                      Coming Soon
+                    </span>
+                  )}
+                </div>
+              </Card>
+            )
+          })}
         </div>
       </div>
 
@@ -123,7 +128,6 @@ export function DeliveryStep({ onValidationChange }: DeliveryStepProps) {
                 {selectedMethod === 'email' && 'Email Address'}
                 {selectedMethod === 'whatsapp' && 'WhatsApp Number'}
                 {selectedMethod === 'telegram' && 'Telegram Username'}
-                {selectedMethod === 'sms' && 'Mobile Number'}
               </Label>
               <Input
                 id="contact"
@@ -173,13 +177,6 @@ export function DeliveryStep({ onValidationChange }: DeliveryStepProps) {
                   <p>• Private bot delivers your content</p>
                   <p>• Secure and private messaging</p>
                   <p>• Built-in audio player</p>
-                </div>
-              )}
-              {selectedMethod === 'sms' && (
-                <div>
-                  <p>• Text message with secure audio link</p>
-                  <p>• Works on any phone</p>
-                  <p>• No app required</p>
                 </div>
               )}
             </div>

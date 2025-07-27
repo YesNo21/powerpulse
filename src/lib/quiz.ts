@@ -10,6 +10,7 @@ export const QuizStep = z.enum([
   'learningStyle',
   'schedule',
   'delivery',
+  'analyzing',
   'complete'
 ])
 
@@ -22,14 +23,8 @@ export const IdentitySchema = z.object({
 })
 
 export const GoalSchema = z.object({
-  primaryGoal: z.enum([
-    'fitness',
-    'mindset',
-    'career',
-    'relationships',
-    'stress'
-  ]),
-  specificGoals: z.array(z.string()).min(1, 'Please select at least one goal'),
+  primaryGoals: z.array(z.string()).min(1, 'Please select at least one focus area'),
+  specificGoals: z.array(z.string()).min(1, 'Please select at least one specific goal'),
 })
 
 export const PainPointsSchema = z.object({
@@ -46,7 +41,7 @@ export const IdealOutcomeSchema = z.object({
 })
 
 export const LearningStyleSchema = z.object({
-  style: z.enum(['direct', 'gentle', 'tough', 'story']),
+  styles: z.array(z.string()).min(1, 'Please select at least one coaching style'),
   intensity: z.number().min(1).max(5),
 })
 
@@ -56,7 +51,7 @@ export const ScheduleSchema = z.object({
 })
 
 export const DeliverySchema = z.object({
-  method: z.enum(['email', 'whatsapp', 'telegram', 'sms']),
+  method: z.enum(['email', 'whatsapp', 'telegram']),
   contact: z.string().min(1, 'Contact information is required'),
 })
 
@@ -186,24 +181,22 @@ export const QUIZ_OPTIONS = {
     email: {
       title: 'Email',
       description: 'Daily audio delivered to your inbox',
-      icon: '📧'
+      icon: '📧',
+      available: true
     },
     whatsapp: {
       title: 'WhatsApp',
       description: 'Personal messages with audio content',
-      icon: '💬'
+      icon: '💬',
+      available: false
     },
     telegram: {
       title: 'Telegram',
       description: 'Private bot delivers your content',
-      icon: '✈️'
-    },
-    sms: {
-      title: 'SMS',
-      description: 'Text message with audio link',
-      icon: '📱'
+      icon: '✈️',
+      available: false
     }
-  }
+  } as const
 }
 
 // Quiz step configuration
@@ -260,6 +253,12 @@ export const QUIZ_STEPS: Array<{
     title: 'How should we reach you?',
     description: 'Choose your preferred delivery method',
     component: 'DeliveryStep'
+  },
+  {
+    id: 'analyzing',
+    title: 'Creating Your PowerPulse Plan',
+    description: 'Analyzing your responses...',
+    component: 'AnalyzingStep'
   },
   {
     id: 'complete',

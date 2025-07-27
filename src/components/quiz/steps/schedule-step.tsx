@@ -88,6 +88,9 @@ export function ScheduleStep({ onValidationChange }: ScheduleStepProps) {
         <p className="text-muted-foreground">
           Choose the perfect time for your 5-minute PowerPulse session.
         </p>
+        <p className="text-sm text-muted-foreground mt-2">
+          💡 You can change this anytime in your settings
+        </p>
       </div>
 
       {/* Popular Times */}
@@ -168,9 +171,6 @@ export function ScheduleStep({ onValidationChange }: ScheduleStepProps) {
               <p className="text-sm text-muted-foreground">
                 You'll receive your personalized PowerPulse at this time daily in {timezone.replace('_', ' ')}.
               </p>
-              <div className="mt-4 text-xs text-muted-foreground">
-                💡 You can always change this later in your settings
-              </div>
             </div>
           </Card>
         </div>
