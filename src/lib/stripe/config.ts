@@ -88,8 +88,8 @@ export const STRIPE_CONFIG = {
   portal: {
     business_profile: {
       headline: 'Manage your PowerPulse subscription',
-      privacy_policy_url: `${process.env.NEXT_PUBLIC_APP_URL}/privacy`,
-      terms_of_service_url: `${process.env.NEXT_PUBLIC_APP_URL}/terms`,
+      privacy_policy_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://pulse.powerhub.dev'}/privacy`,
+      terms_of_service_url: `${process.env.NEXT_PUBLIC_APP_URL || 'https://pulse.powerhub.dev'}/terms`,
     },
     features: {
       customer_update: {

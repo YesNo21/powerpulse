@@ -12,6 +12,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 })
 
 async function setupStripeProducts() {
+  // Check if we're in live mode
+  const isLiveMode = process.env.STRIPE_SECRET_KEY?.startsWith('sk_live_')
+  if (isLiveMode) {
+    console.log('⚠️  WARNING: You are using LIVE Stripe keys!')
+    console.log('⚠️  This will create real products and prices in your live Stripe account.')
+    console.log('⚠️  Press Ctrl+C to cancel, or wait 5 seconds to continue...\n')
+    await new Promise(resolve => setTimeout(resolve, 5000))
+  }
   console.log('🚀 Setting up Stripe products and prices...\n')
 
   try {
@@ -87,7 +95,7 @@ async function setupStripeProducts() {
     }
 
     // Step 4: Create webhook endpoint (if not exists)
-    const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhook/stripe`
+    const webhookUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://pulse.powerhub.dev'}/api/webhook/stripe`
     const existingWebhooks = await stripe.webhookEndpoints.list({ limit: 100 })
     const existingWebhook = existingWebhooks.data.find(w => w.url === webhookUrl)
 
