@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Sparkles, Clock, Target, MessageCircle } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { api } from '@/lib/trpc/react'
+import { api } from '@/lib/trpc/client'
 
 interface CompleteStepProps {
   onValidationChange: (isValid: boolean) => void

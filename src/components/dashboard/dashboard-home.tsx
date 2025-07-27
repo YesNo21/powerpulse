@@ -20,7 +20,7 @@ import {
   Award,
   BarChart3,
 } from 'lucide-react'
-import { api } from '@/lib/trpc/react'
+import { api } from '@/lib/trpc/client'
 
 export function DashboardHome() {
   const { user } = useUser()

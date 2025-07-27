@@ -8,7 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
 import { toast } from 'sonner'
-import { api } from '@/lib/trpc/react'
+import { api } from '@/lib/trpc/client'
 import {
   Form,
   FormControl,
