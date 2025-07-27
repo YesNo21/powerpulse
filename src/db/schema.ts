@@ -12,6 +12,8 @@ export const users = pgTable('users', {
   subscriptionStatus: varchar('subscription_status', { length: 50 }).default('inactive'),
   stripeCustomerId: varchar('stripe_customer_id', { length: 256 }),
   stripeSubscriptionId: varchar('stripe_subscription_id', { length: 256 }),
+  subscriptionPriceId: varchar('subscription_price_id', { length: 256 }),
+  subscriptionCurrentPeriodEnd: timestamp('subscription_current_period_end'),
   refundEligibleUntil: timestamp('refund_eligible_until'),
 })
 
@@ -47,9 +49,14 @@ export const dailyContent = pgTable('daily_content', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id).notNull(),
   date: date('date').notNull(),
+  title: varchar('title', { length: 256 }),
   script: text('script').notNull(),
   audioUrl: varchar('audio_url', { length: 512 }),
   duration: integer('duration'), // in seconds
+  keyPoints: json('key_points').$type<string[]>().default([]),
+  stage: varchar('stage', { length: 50 }), // awareness, consideration, decision, retention
+  tone: varchar('tone', { length: 50 }), // motivational, educational, celebratory, supportive
+  promptType: varchar('prompt_type', { length: 100 }), // template used
   delivered: boolean('delivered').default(false),
   deliveredAt: timestamp('delivered_at'),
   listened: boolean('listened').default(false),
