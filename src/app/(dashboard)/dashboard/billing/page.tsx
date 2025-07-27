@@ -5,9 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, CreditCard, Calendar, CheckCircle2, XCircle, AlertCircle, ExternalLink } from 'lucide-react'
-import { api } from '@/lib/api'
+import { api } from '@/lib/trpc/client'
 import { formatPrice } from '@/lib/stripe/config'
-import { useToast } from '@/components/ui/toast'
+import { useToast } from '@/hooks/use-toast'
 
 export default function BillingPage() {
   const [isLoadingPortal, setIsLoadingPortal] = useState(false)
