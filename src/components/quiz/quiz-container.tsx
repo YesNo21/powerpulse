@@ -17,6 +17,7 @@ import { PainPointsStep } from './steps/pain-points-step'
 import { CurrentLevelStep } from './steps/current-level-step'
 import { IdealOutcomeStep } from './steps/ideal-outcome-step'
 import { LearningStyleStep } from './steps/learning-style-step'
+import { VoiceSelectionStep } from './steps/voice-selection-step'
 import { ScheduleStep } from './steps/schedule-step'
 import { DeliveryStep } from './steps/delivery-step'
 import { AnalyzingStep } from './steps/analyzing-step'
@@ -29,6 +30,7 @@ const stepComponents = {
   CurrentLevelStep,
   IdealOutcomeStep,
   LearningStyleStep,
+  VoiceSelectionStep,
   ScheduleStep,
   DeliveryStep,
   AnalyzingStep,

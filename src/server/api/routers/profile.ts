@@ -7,14 +7,15 @@ import { eq, sql } from 'drizzle-orm'
 const createProfileSchema = z.object({
   painPoints: z.array(z.string()),
   goals: z.array(z.string()),
-  learningStyle: z.enum(['direct', 'gentle', 'tough', 'story']),
+  learningStyles: z.array(z.string()),
   currentLevel: z.number().min(1).max(10),
   progressStage: z.enum(['beginner', 'intermediate', 'advanced', 'mastery']),
   personalityType: z.string().optional(),
   triggers: z.array(z.string()).optional(),
   blockers: z.array(z.string()).optional(),
   preferredDeliveryTime: z.string().optional(),
-  deliveryMethod: z.enum(['email', 'whatsapp', 'telegram', 'sms']).optional(),
+  deliveryMethod: z.enum(['email', 'whatsapp', 'telegram']).optional(),
+  voicePreference: z.string().optional(),
   bio: z.string().optional(),
   timezone: z.string().optional(),
   preferredWorkoutTime: z.string().optional(),
@@ -100,7 +101,7 @@ export const profileRouter = createTRPCRouter({
         pronouns: z.string().optional(),
       }),
       goals: z.object({
-        primaryGoal: z.string(),
+        primaryGoals: z.array(z.string()),
         specificGoals: z.array(z.string()),
       }),
       painPoints: z.object({
@@ -114,15 +115,20 @@ export const profileRouter = createTRPCRouter({
         dreamTransformation: z.string(),
       }),
       learningStyle: z.object({
-        style: z.enum(['direct', 'gentle', 'tough', 'story']),
+        styles: z.array(z.string()),
         intensity: z.number(),
+      }),
+      voiceSelection: z.object({
+        voiceId: z.string(),
+        voiceName: z.string(),
+        persona: z.any().optional(),
       }),
       schedule: z.object({
         preferredTime: z.string(),
         timezone: z.string(),
       }),
       delivery: z.object({
-        method: z.enum(['email', 'whatsapp', 'telegram', 'sms']),
+        method: z.enum(['email', 'whatsapp', 'telegram']),
         contact: z.string(),
       }),
     }))
@@ -135,6 +141,7 @@ export const profileRouter = createTRPCRouter({
         { questionId: 'currentLevel', answer: input.currentLevel },
         { questionId: 'idealOutcome', answer: input.idealOutcome },
         { questionId: 'learningStyle', answer: input.learningStyle },
+        { questionId: 'voiceSelection', answer: input.voiceSelection },
         { questionId: 'schedule', answer: input.schedule },
         { questionId: 'delivery', answer: input.delivery },
       ]
@@ -158,15 +165,16 @@ export const profileRouter = createTRPCRouter({
       // Create comprehensive profile
       const profileData = {
         painPoints: input.painPoints.painPoints,
-        goals: [input.goals.primaryGoal, ...input.goals.specificGoals],
-        learningStyle: input.learningStyle.style,
+        goals: [...input.goals.primaryGoals, ...input.goals.specificGoals],
+        learningStyles: input.learningStyle.styles,
         currentLevel: input.currentLevel.level,
         progressStage,
-        personalityType: `${input.learningStyle.style}-${input.learningStyle.intensity}`,
+        personalityType: `${input.learningStyle.styles.join('-')}-${input.learningStyle.intensity}`,
         triggers: input.goals.specificGoals,
         blockers: input.painPoints.painPoints,
         preferredDeliveryTime: input.schedule.preferredTime,
         deliveryMethod: input.delivery.method,
+        voicePreference: input.voiceSelection.voiceId,
         bio: `${input.idealOutcome.dreamTransformation}. Biggest frustration: ${input.currentLevel.biggestFrustration}`,
         timezone: input.schedule.timezone,
       }

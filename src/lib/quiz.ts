@@ -8,6 +8,7 @@ export const QuizStep = z.enum([
   'currentLevel',
   'idealOutcome',
   'learningStyle',
+  'voiceSelection',
   'schedule',
   'delivery',
   'analyzing',
@@ -50,6 +51,12 @@ export const ScheduleSchema = z.object({
   timezone: z.string(),
 })
 
+export const VoiceSelectionSchema = z.object({
+  voiceId: z.string().min(1, 'Please select a voice'),
+  voiceName: z.string(),
+  persona: z.any().optional()
+})
+
 export const DeliverySchema = z.object({
   method: z.enum(['email', 'whatsapp', 'telegram']),
   contact: z.string().min(1, 'Contact information is required'),
@@ -63,6 +70,7 @@ export type QuizResponse = {
   currentLevel: z.infer<typeof CurrentLevelSchema>
   idealOutcome: z.infer<typeof IdealOutcomeSchema>
   learningStyle: z.infer<typeof LearningStyleSchema>
+  voiceSelection: z.infer<typeof VoiceSelectionSchema>
   schedule: z.infer<typeof ScheduleSchema>
   delivery: z.infer<typeof DeliverySchema>
 }
@@ -241,6 +249,12 @@ export const QUIZ_STEPS: Array<{
     title: 'How do you prefer guidance?',
     description: 'Choose your ideal coaching style',
     component: 'LearningStyleStep'
+  },
+  {
+    id: 'voiceSelection',
+    title: 'Choose Your Coach',
+    description: 'Select a voice that motivates you',
+    component: 'VoiceSelectionStep'
   },
   {
     id: 'schedule',

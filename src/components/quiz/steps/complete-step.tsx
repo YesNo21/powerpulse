@@ -41,13 +41,35 @@ export function CompleteStep({ onValidationChange }: CompleteStepProps) {
   const handleCompleteQuiz = async () => {
     if (!responses.identity || !responses.goals || !responses.painPoints || 
         !responses.currentLevel || !responses.idealOutcome || !responses.learningStyle || 
-        !responses.schedule || !responses.delivery) {
+        !responses.voiceSelection || !responses.schedule || !responses.delivery) {
+      console.error('Missing required responses:', {
+        identity: !!responses.identity,
+        goals: !!responses.goals,
+        painPoints: !!responses.painPoints,
+        currentLevel: !!responses.currentLevel,
+        idealOutcome: !!responses.idealOutcome,
+        learningStyle: !!responses.learningStyle,
+        voiceSelection: !!responses.voiceSelection,
+        schedule: !!responses.schedule,
+        delivery: !!responses.delivery,
+      })
       return
     }
 
     setIsSubmitting(true)
     
     try {
+      // In development, skip the API call
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Dev mode: Skipping quiz submission', responses)
+        setIsComplete(true)
+        completeQuiz()
+        setTimeout(() => {
+          router.push('/quiz/payment')
+        }, 2000)
+        return
+      }
+
       await completeQuizMutation.mutateAsync({
         identity: responses.identity,
         goals: responses.goals,
@@ -55,6 +77,7 @@ export function CompleteStep({ onValidationChange }: CompleteStepProps) {
         currentLevel: responses.currentLevel,
         idealOutcome: responses.idealOutcome,
         learningStyle: responses.learningStyle,
+        voiceSelection: responses.voiceSelection,
         schedule: responses.schedule,
         delivery: responses.delivery,
       })

@@ -23,7 +23,9 @@ export const userProfiles = pgTable('user_profiles', {
   userId: integer('user_id').references(() => users.id).notNull(),
   painPoints: json('pain_points').$type<string[]>().default([]),
   goals: json('goals').$type<string[]>().default([]),
-  learningStyle: varchar('learning_style', { length: 50 }), // direct, gentle, tough, story
+  learningStyle: varchar('learning_style', { length: 50 }), // direct, gentle, tough, story (deprecated)
+  learningStyles: json('learning_styles').$type<string[]>().default([]), // Multiple styles
+  voicePreference: varchar('voice_preference', { length: 100 }), // Selected voice ID
   currentLevel: integer('current_level').default(5), // 1-10 scale
   progressStage: varchar('progress_stage', { length: 50 }).default('beginner'), // beginner, intermediate, advanced, mastery
   personalityType: varchar('personality_type', { length: 256 }),
