@@ -5,12 +5,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, CreditCard, Calendar, CheckCircle2, XCircle, AlertCircle, ExternalLink } from 'lucide-react'
-import { api } from '@/lib/api/client'
+import { api } from '@/lib/api'
 import { formatPrice } from '@/lib/stripe/config'
-import { toast } from '@/hooks/use-toast'
+import { useToast } from '@/components/ui/toast'
 
 export default function BillingPage() {
   const [isLoadingPortal, setIsLoadingPortal] = useState(false)
+  const { toast } = useToast()
   
   // Get subscription data
   const { data: subscription, isLoading } = api.subscription.getStatus.useQuery()
