@@ -16,43 +16,20 @@ export interface SubscriptionPlan {
 // Define your subscription plans
 export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   {
-    id: 'basic',
-    name: 'Basic Plan',
-    priceId: process.env.STRIPE_BASIC_PRICE_ID!,
-    amount: 999, // $9.99
+    id: 'powerpulse',
+    name: 'PowerPulse Daily Coaching',
+    priceId: process.env.STRIPE_POWERPULSE_PRICE_ID || 'price_1234567890',
+    amount: 1499, // $14.99
     interval: 'month',
     features: [
-      'Access to basic workouts',
-      'Progress tracking',
-      'Email support',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro Plan',
-    priceId: process.env.STRIPE_PRO_PRICE_ID!,
-    amount: 1999, // $19.99
-    interval: 'month',
-    features: [
-      'All Basic features',
-      'Advanced workouts',
-      'Personalized plans',
-      'Priority support',
-      'Video tutorials',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'Premium Plan',
-    priceId: process.env.STRIPE_PREMIUM_PRICE_ID!,
-    amount: 3999, // $39.99
-    interval: 'month',
-    features: [
-      'All Pro features',
-      '1-on-1 coaching',
-      'Custom meal plans',
-      'Live sessions',
-      'Exclusive content',
+      'Personalized daily 5-minute audio coaching',
+      'AI-powered content based on your goals',
+      'Progress tracking and streak management',
+      'Multi-channel delivery (Email, WhatsApp, Telegram, SMS)',
+      'Journey milestones and achievements',
+      'Content library with favorites',
+      '30-day money-back guarantee',
+      'Cancel anytime',
     ],
   },
 ];
