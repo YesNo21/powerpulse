@@ -10,6 +10,7 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://powerpulse.app'),
   title: 'PowerPulse - Your AI Personal Coach in 5 Minutes Daily',
   description: 'Transform your life with personalized daily audio coaching. AI-powered motivation tailored to your unique journey.',
   keywords: ['personal coaching', 'daily motivation', 'AI coach', 'fitness motivation', 'personal development'],
