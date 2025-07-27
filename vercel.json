@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/generate-content",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/send-daily-emails",
+      "schedule": "0 6 * * *"
     }
   ],
   "env": {

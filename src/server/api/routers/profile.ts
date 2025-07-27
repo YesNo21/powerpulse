@@ -205,6 +205,11 @@ export const profileRouter = createTRPCRouter({
           .where(eq(users.id, ctx.userId))
       }
 
+      // Send welcome email (async, don't block response)
+      import('@/lib/email/email-hooks').then(({ sendWelcomeEmail }) => {
+        sendWelcomeEmail(ctx.userId).catch(console.error)
+      })
+
       return { profile, quizCompleted: true }
     }),
 
