@@ -56,12 +56,17 @@ export function RippleGrid({
     const renderer = new Renderer({
       dpr: Math.min(window.devicePixelRatio, 2),
       alpha: true,
+      premultipliedAlpha: false,
     });
     const gl = renderer.gl;
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     gl.canvas.style.width = "100%";
     gl.canvas.style.height = "100%";
+    
+    // Set clear color to black
+    gl.clearColor(0, 0, 0, 1);
+    
     containerRef.current.appendChild(gl.canvas);
 
     const vert = `

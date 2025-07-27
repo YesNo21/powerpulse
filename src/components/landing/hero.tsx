@@ -6,8 +6,11 @@ import { Badge } from '@/components/ui/badge'
 import { RippleGrid } from '@/components/ui/ripple-grid'
 import { ArrowRight, Sparkles, Users, Zap } from 'lucide-react'
 import Link from 'next/link'
+import { useAuth } from '@clerk/nextjs'
 
 export function Hero() {
+  const { isSignedIn } = useAuth()
+  
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black">
       {/* Ripple Grid Background */}
@@ -67,7 +70,7 @@ export function Hero() {
             transition={{ delay: 0.4 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8"
           >
-            <Link href="/sign-up">
+            <Link href={isSignedIn ? "/quiz" : "/sign-up"}>
               <Button size="lg" variant="glow" className="group">
                 Start Your Journey - Risk Free
                 <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
