@@ -151,6 +151,7 @@ export const refunds = pgTable('refunds', {
 export const audioGenerationQueue = pgTable('audio_generation_queue', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').references(() => users.id).notNull(),
+  contentId: integer('content_id').references(() => dailyContent.id),
   script: text('script').notNull(),
   scheduledFor: timestamp('scheduled_for').notNull(),
   voiceSettings: json('voice_settings').$type<any>().default({}),

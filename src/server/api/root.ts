@@ -1,6 +1,7 @@
 import { createTRPCRouter } from './trpc'
 import { userRouter } from './routers/user'
 import { contentRouter } from './routers/content'
+import { audioRouter } from './routers/audio'
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { contentRouter } from './routers/content'
 export const appRouter = createTRPCRouter({
   user: userRouter,
   content: contentRouter,
+  audio: audioRouter,
 })
 
 // export type definition of API
