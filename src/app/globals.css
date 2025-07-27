@@ -72,4 +72,8 @@
   .glow {
     @apply shadow-lg shadow-brand-primary/25;
   }
+
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
 }
