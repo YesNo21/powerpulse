@@ -66,6 +66,8 @@ export const dailyContent = pgTable('daily_content', {
   listened: boolean('listened').default(false),
   listenedAt: timestamp('listened_at'),
   feedback: varchar('feedback', { length: 50 }), // positive, neutral, negative
+  playCount: integer('play_count').default(0),
+  lastPlayedAt: timestamp('last_played_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
@@ -167,6 +169,82 @@ export const audioGenerationQueue = pgTable('audio_generation_queue', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 
+// User notification preferences
+export const userNotificationPreferences = pgTable('user_notification_preferences', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull().unique(),
+  // Channel preferences
+  emailEnabled: boolean('email_enabled').default(true),
+  emailFrequency: varchar('email_frequency', { length: 20 }).default('daily'), // daily, weekly, monthly
+  whatsappEnabled: boolean('whatsapp_enabled').default(false),
+  telegramEnabled: boolean('telegram_enabled').default(false),
+  smsEnabled: boolean('sms_enabled').default(false),
+  pushEnabled: boolean('push_enabled').default(true),
+  inAppEnabled: boolean('in_app_enabled').default(true),
+  // Content preferences
+  dailyAudioNotifications: boolean('daily_audio_notifications').default(true),
+  streakReminders: boolean('streak_reminders').default(true),
+  milestoneNotifications: boolean('milestone_notifications').default(true),
+  newContentAlerts: boolean('new_content_alerts').default(true),
+  socialNotifications: boolean('social_notifications').default(false),
+  // Timing preferences
+  preferredDeliveryTime: varchar('preferred_delivery_time', { length: 5 }), // HH:MM format
+  timezone: varchar('timezone', { length: 100 }).default('America/New_York'),
+  quietHoursEnabled: boolean('quiet_hours_enabled').default(false),
+  quietHoursStart: varchar('quiet_hours_start', { length: 5 }), // HH:MM format
+  quietHoursEnd: varchar('quiet_hours_end', { length: 5 }), // HH:MM format
+  // Telegram specific
+  telegramChatId: varchar('telegram_chat_id', { length: 256 }),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// Delivery schedules
+export const deliverySchedules = pgTable('delivery_schedules', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  scheduledTime: varchar('scheduled_time', { length: 5 }).notNull(), // HH:MM format
+  timezone: varchar('timezone', { length: 100 }).notNull(),
+  frequency: varchar('frequency', { length: 20 }).default('daily'), // daily, weekdays, custom
+  isActive: boolean('is_active').default(true),
+  pausedAt: timestamp('paused_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+})
+
+// Delivery logs
+export const deliveryLogs = pgTable('delivery_logs', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  contentId: integer('content_id').references(() => dailyContent.id),
+  channel: varchar('channel', { length: 20 }).notNull(), // email, whatsapp, telegram, sms, push, inApp, all
+  type: varchar('type', { length: 50 }).notNull(), // daily_audio, reminder, milestone, system
+  status: varchar('status', { length: 20 }).notNull(), // pending, delivered, failed, paused, resumed
+  message: text('message'),
+  metadata: json('metadata').$type<any>(),
+  attemptedAt: timestamp('attempted_at'),
+  deliveredAt: timestamp('delivered_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// Push subscriptions
+export const pushSubscriptions = pgTable('push_subscriptions', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  endpoint: text('endpoint').notNull().unique(),
+  p256dh: text('p256dh').notNull(),
+  auth: text('auth').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
+// User favorites
+export const userFavorites = pgTable('user_favorites', {
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  contentId: integer('content_id').references(() => dailyContent.id).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})
+
 // Define relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(userProfiles, {
@@ -188,6 +266,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     fields: [users.id],
     references: [subscriptions.userId],
   }),
+  favorites: many(userFavorites),
 }))
 
 export const userProfilesRelations = relations(userProfiles, ({ one }) => ({
@@ -205,5 +284,24 @@ export const userAchievementsRelations = relations(userAchievements, ({ one }) =
   achievement: one(achievements, {
     fields: [userAchievements.achievementId],
     references: [achievements.id],
+  }),
+}))
+
+export const dailyContentRelations = relations(dailyContent, ({ one, many }) => ({
+  user: one(users, {
+    fields: [dailyContent.userId],
+    references: [users.id],
+  }),
+  favorites: many(userFavorites),
+}))
+
+export const userFavoritesRelations = relations(userFavorites, ({ one }) => ({
+  user: one(users, {
+    fields: [userFavorites.userId],
+    references: [users.id],
+  }),
+  content: one(dailyContent, {
+    fields: [userFavorites.contentId],
+    references: [dailyContent.id],
   }),
 }))

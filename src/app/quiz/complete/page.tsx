@@ -7,6 +7,7 @@ import { CheckCircle2, Sparkles, Trophy, ArrowRight, Loader2 } from 'lucide-reac
 import { Button } from '@/components/ui/button'
 import useQuizStore from '@/lib/stores/quiz-store'
 import { api } from '@/lib/trpc/client'
+import { useAnalytics } from '@/hooks/use-analytics'
 import confetti from 'canvas-confetti'
 
 export default function QuizCompletePage() {
@@ -14,10 +15,22 @@ export default function QuizCompletePage() {
   const { quizData, resetQuiz } = useQuizStore()
   const [isSubmitting, setIsSubmitting] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { track, trackConversion } = useAnalytics()
 
   // Complete quiz mutation
   const completeQuiz = api.user.completeQuiz.useMutation({
     onSuccess: () => {
+      // Track quiz completion
+      track('onboarding:quiz_completed', {
+        totalSteps: 4,
+        totalTime: Date.now() - (window.sessionStorage.getItem('quiz_start_time') ? parseInt(window.sessionStorage.getItem('quiz_start_time')!) : Date.now()),
+        painPoints: quizData.currentFitness.currentChallenges || [],
+        goals: [quizData.fitnessGoals.primaryGoal, ...quizData.fitnessGoals.secondaryGoals].filter(Boolean),
+        learningStyle: 'gentle',
+      })
+      
+      trackConversion('conversion:quiz_completed')
+      
       // Trigger confetti
       confetti({
         particleCount: 100,
@@ -33,6 +46,11 @@ export default function QuizCompletePage() {
       }, 2000)
     },
     onError: (error) => {
+      track('error:occurred', {
+        error: error.message,
+        context: 'quiz_submission',
+        severity: 'high',
+      })
       setError(error.message)
       setIsSubmitting(false)
     },
@@ -225,7 +243,13 @@ export default function QuizCompletePage() {
               transition={{ delay: 1.2 }}
             >
               <Button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => {
+                  track('engagement:feature_used', {
+                    feature: 'button_clicked',
+                    action: 'quiz_complete_dashboard',
+                  })
+                  router.push('/dashboard')
+                }}
                 size="lg"
                 variant="glow"
                 className="w-full group"

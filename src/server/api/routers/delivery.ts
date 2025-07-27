@@ -1,14 +1,15 @@
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc';
+import { createTRPCRouter, protectedProcedure } from '@/server/api/trpc';
 import { TRPCError } from '@trpc/server';
-import { emailService } from '~/lib/delivery/email-service';
-import { messagingService } from '~/lib/delivery/messaging-service';
-import { notificationService } from '~/lib/delivery/notification-service';
+import { emailService } from '@/lib/delivery/email-service';
+import { messagingService } from '@/lib/delivery/messaging-service';
+import { notificationService } from '@/lib/delivery/notification-service';
 import { 
   userNotificationPreferences, 
   deliverySchedules,
-  deliveryLogs 
-} from '~/server/db/schema';
+  deliveryLogs,
+  pushSubscriptions 
+} from '@/db/schema';
 import { eq, and, desc } from 'drizzle-orm';
 import { DailyAudioEmail } from '~/lib/email-templates/daily-audio';
 import { WelcomeEmail } from '~/lib/email-templates/welcome';
@@ -365,7 +366,7 @@ export const deliveryRouter = createTRPCRouter({
       const userId = ctx.session.user.id;
       
       const subscriptions = await ctx.db.query.pushSubscriptions.findMany({
-        where: eq(deliverySchedules.userId, userId),
+        where: eq(pushSubscriptions.userId, userId),
       });
 
       return {

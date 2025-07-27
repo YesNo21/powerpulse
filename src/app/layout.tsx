@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import { ClerkProvider } from '@clerk/nextjs'
 import { TRPCReactProvider } from '@/lib/trpc/provider'
+import { AnalyticsProvider } from '@/lib/analytics/analytics-provider'
+import { analyticsConfig } from '@/lib/analytics/config'
 import { headers } from 'next/headers'
 import './globals.css'
 
@@ -45,7 +47,9 @@ export default function RootLayout({
       <html lang="en" className="dark">
         <body className={inter.className}>
           <TRPCReactProvider headers={headers()}>
-            {children}
+            <AnalyticsProvider config={analyticsConfig}>
+              {children}
+            </AnalyticsProvider>
           </TRPCReactProvider>
         </body>
       </html>

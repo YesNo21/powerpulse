@@ -2,8 +2,8 @@ import { Twilio } from 'twilio';
 import { TelegramBot } from 'node-telegram-bot-api';
 import { z } from 'zod';
 import { TRPCError } from '@trpc/server';
-import { db } from '~/server/db';
-import { users, userNotificationPreferences, audioSessions } from '~/server/db/schema';
+import { db } from '@/db';
+import { users, userNotificationPreferences, dailyContent } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 
 // Initialize Twilio client

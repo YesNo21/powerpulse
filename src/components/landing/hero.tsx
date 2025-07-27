@@ -11,7 +11,10 @@ export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Ripple Grid Background */}
-      <RippleGrid />
+      <div className="absolute inset-0 overflow-hidden">
+        <RippleGrid />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/50 to-background" />
+      </div>
 
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-32 text-center">

@@ -1,0 +1,12 @@
+.ripple-grid-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.ripple-grid-container canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
