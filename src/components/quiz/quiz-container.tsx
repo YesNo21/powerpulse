@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useQuiz } from '@/hooks/use-quiz'
 import { Button } from '@/components/ui/button'
@@ -41,6 +41,10 @@ export function QuizContainer() {
   const progress = getProgress()
   const canGoNext = isValid && currentStep !== 'complete'
   const canGoBack = currentStep !== 'identity'
+  
+  const handleValidationChange = useCallback((valid: boolean) => {
+    setIsValid(valid)
+  }, [])
 
   const handleNext = () => {
     const nextStep = getNextStep(currentStep)
@@ -105,7 +109,7 @@ export function QuizContainer() {
               transition={{ duration: 0.3 }}
             >
               <Card className="p-8">
-                <StepComponent onValidationChange={setIsValid} />
+                <StepComponent onValidationChange={handleValidationChange} />
               </Card>
             </motion.div>
           </AnimatePresence>

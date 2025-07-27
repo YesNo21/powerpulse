@@ -31,13 +31,17 @@ export function IdentityStep({ onValidationChange }: IdentityStepProps) {
   const watchedValues = watch()
 
   useEffect(() => {
-    const isValid = form.formState.isValid && watchedValues.name.length > 0
-    onValidationChange(isValid)
+    const subscription = form.watch((value) => {
+      const isValid = value.name && value.name.length > 0
+      onValidationChange(isValid)
+      
+      if (isValid) {
+        updateResponse('identity', value as IdentityData)
+      }
+    })
     
-    if (isValid) {
-      updateResponse('identity', watchedValues)
-    }
-  }, [watchedValues, form.formState.isValid, onValidationChange, updateResponse])
+    return () => subscription.unsubscribe()
+  }, [form, onValidationChange, updateResponse])
 
   return (
     <div className="space-y-6">
