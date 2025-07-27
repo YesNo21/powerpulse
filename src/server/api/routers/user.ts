@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import { createTRPCRouter, protectedProcedure } from '../trpc'
-import { userProfiles, quizResponses, userStreaks } from '@/db/schema'
+import { users, userProfiles, quizResponses, userStreaks } from '@/db/schema'
 import { eq, and } from 'drizzle-orm'
 import { TRPCError } from '@trpc/server'
 
@@ -16,6 +16,14 @@ const updateProfileSchema = z.object({
   blockers: z.array(z.string()).optional(),
   preferredDeliveryTime: z.string().regex(/^\d{2}:\d{2}$/).optional(), // HH:MM format
   deliveryMethod: z.enum(['email', 'whatsapp', 'telegram', 'sms']).optional(),
+})
+
+const updateUserDetailsSchema = z.object({
+  name: z.string().min(1).max(256).optional(),
+  bio: z.string().max(500).optional(),
+  timezone: z.string().optional(),
+  language: z.string().optional(),
+  preferredWorkoutTime: z.string().regex(/^\d{2}:\d{2}$/).optional(),
 })
 
 const quizResponseSchema = z.object({
@@ -43,6 +51,20 @@ export const userRouter = createTRPCRouter({
   // Get the current user's profile
   getProfile: protectedProcedure.query(async ({ ctx }) => {
     const { user, db } = ctx
+
+    // Get user data from database
+    const [dbUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1)
+
+    if (!dbUser) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      })
+    }
 
     // Get user profile
     const [profile] = await db
@@ -72,26 +94,14 @@ export const userRouter = createTRPCRouter({
         .returning()
 
       return {
-        user: {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          clerkId: user.clerkId,
-          subscriptionStatus: user.subscriptionStatus,
-        },
+        user: dbUser,
         profile: newProfile,
         streak: streak || null,
       }
     }
 
     return {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        clerkId: user.clerkId,
-        subscriptionStatus: user.subscriptionStatus,
-      },
+      user: dbUser,
       profile,
       streak: streak || null,
     }
@@ -225,5 +235,83 @@ export const userRouter = createTRPCRouter({
       .orderBy(quizResponses.createdAt)
 
     return responses
+  }),
+
+  // Update user details (name, bio, etc.)
+  updateUserDetails: protectedProcedure
+    .input(updateUserDetailsSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { user, db } = ctx
+
+      // First, let's check if we need to add these fields to the user profile
+      const [existingProfile] = await db
+        .select()
+        .from(userProfiles)
+        .where(eq(userProfiles.userId, user.id))
+        .limit(1)
+
+      if (!existingProfile) {
+        // Create profile with the details
+        const [newProfile] = await db
+          .insert(userProfiles)
+          .values({
+            userId: user.id,
+            ...input,
+            updatedAt: new Date(),
+          })
+          .returning()
+
+        return { success: true, profile: newProfile }
+      }
+
+      // Update the profile with additional details
+      const [updatedProfile] = await db
+        .update(userProfiles)
+        .set({
+          ...input,
+          updatedAt: new Date(),
+        })
+        .where(eq(userProfiles.userId, user.id))
+        .returning()
+
+      return { success: true, profile: updatedProfile }
+    }),
+
+  // Get user statistics
+  getUserStats: protectedProcedure.query(async ({ ctx }) => {
+    const { user, db } = ctx
+
+    // Get user data from database
+    const [dbUser] = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, user.id))
+      .limit(1)
+
+    if (!dbUser) {
+      throw new TRPCError({
+        code: 'NOT_FOUND',
+        message: 'User not found',
+      })
+    }
+
+    // Get total days active
+    const [streak] = await db
+      .select()
+      .from(userStreaks)
+      .where(eq(userStreaks.userId, user.id))
+      .limit(1)
+
+    // Get account creation date and other stats
+    const stats = {
+      accountCreatedAt: dbUser.createdAt,
+      totalDaysActive: streak?.totalDaysActive || 0,
+      currentStreak: streak?.currentStreak || 0,
+      longestStreak: streak?.longestStreak || 0,
+      subscriptionStatus: dbUser.subscriptionStatus,
+      refundEligibleUntil: dbUser.refundEligibleUntil,
+    }
+
+    return stats
   }),
 })

@@ -31,6 +31,10 @@ export const userProfiles = pgTable('user_profiles', {
   blockers: json('blockers').$type<string[]>().default([]),
   preferredDeliveryTime: varchar('preferred_delivery_time', { length: 10 }), // HH:MM format
   deliveryMethod: varchar('delivery_method', { length: 50 }).default('email'), // email, whatsapp, telegram, sms
+  bio: text('bio'),
+  timezone: varchar('timezone', { length: 100 }),
+  language: varchar('language', { length: 10 }).default('en'),
+  preferredWorkoutTime: varchar('preferred_workout_time', { length: 10 }), // HH:MM format
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
